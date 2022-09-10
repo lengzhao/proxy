@@ -55,9 +55,8 @@ func main() {
 			grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
 
-	server := grpc.NewServer(
-		grpc.CustomCodec(grpc_proxy.ProxyCodec{}),
-		grpc_proxy.GetServerOption(director))
+	ops := grpc_proxy.GetServerOptions(director)
+	server := grpc.NewServer(ops...)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {

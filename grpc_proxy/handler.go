@@ -20,8 +20,11 @@ func TransparentHandler(director StreamDirector) grpc.StreamHandler {
 	return streamer.handler
 }
 
-func GetServerOption(director StreamDirector) grpc.ServerOption {
-	return grpc.UnknownServiceHandler(TransparentHandler(director))
+func GetServerOptions(director StreamDirector) []grpc.ServerOption {
+	var out []grpc.ServerOption
+	out = append(out, grpc.UnknownServiceHandler(TransparentHandler(director)))
+	out = append(out, grpc.CustomCodec(ProxyCodec{}))
+	return out
 }
 
 type handler struct {
