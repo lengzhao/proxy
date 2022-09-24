@@ -1,5 +1,8 @@
 {
-    "route":{
+    "service_route":{
         "helloworld.Greeter":"127.0.0.1:50051"
+    },
+    "method_route":{
+        "helloworld.Greeter/SayHello":"127.0.0.1:50051"
     }
 }

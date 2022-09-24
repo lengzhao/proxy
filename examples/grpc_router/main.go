@@ -18,7 +18,8 @@ import (
 )
 
 type Config struct {
-	Route map[string]string `json:"route,omitempty"`
+	ServiceRoute map[string]string `json:"service_route,omitempty"`
+	MethodRoute  map[string]string `json:"method_route,omitempty"`
 }
 
 func main() {
@@ -34,7 +35,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("error json file:", err)
 	}
-	if len(conf.Route) == 0 {
+	if len(conf.ServiceRoute) == 0 && len(conf.MethodRoute) == 0 {
 		log.Fatalln("not found any route item")
 	}
 
@@ -44,10 +45,13 @@ func main() {
 			return nil, status.Error(codes.InvalidArgument, fullMethodName)
 		}
 		svcName := arrs[1]
-		endpoint := conf.Route[svcName]
+		endpoint := conf.MethodRoute[fullMethodName]
 		if len(endpoint) == 0 {
-			log.Println("not found endpoint:", fullMethodName)
-			return nil, status.Error(codes.Unauthenticated, "")
+			endpoint = conf.ServiceRoute[svcName]
+			if len(endpoint) == 0 {
+				log.Println("not found endpoint:", fullMethodName)
+				return nil, status.Error(codes.Unauthenticated, "")
+			}
 		}
 		log.Println("route:", fullMethodName, endpoint)
 		return grpc.DialContext(ctx, endpoint,
